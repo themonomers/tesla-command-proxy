@@ -6,7 +6,7 @@ It adds a new `-mode owner` switch to the tesla-http-proxy, and then forwards AP
 It also adds a new `-mode ble` switch to the tesla-http-proxy, and then forwards API requests to the Owner API, except for commands which are send via BLE (Bluetooth Low Energy) with end-to-end command authentication. This requires the proxy to run on a device near the vehicle.
 
 > [!CAUTION]
-> ble mode does not need the client to valid auth token to send commands. Anybody with network access to the proxy could send commands.
+> ble mode does not require the client to provide a valid auth token to send commands. Anybody with network access to the proxy could send commands.
 
 This is barely working right now. Use it at your own risk and have a debugger ready. I welcome Pull Requests.
 
@@ -28,13 +28,24 @@ Run the modified proxy:
 
 Get vehicle_data and send command:
 ```
-# curl -k --header "Authorization: Bearer $OWNER_AUTH_TOKEN" "https://localhost:4443/api/1/vehicles/$VIN/vehicle_data" | jq .response.charge_state.charge_limit_soc
+# curl --cacert cert.pem -s \
+      --header "Authorization: Bearer $OWNER_AUTH_TOKEN" \
+      "https://localhost:4443/api/1/vehicles/$VIN/vehicle_data" \
+      | jq .response.charge_state.charge_limit_soc
 86
 
-# curl -k --header 'Content-Type: application/json' --header "Authorization: Bearer $OWNER_AUTH_TOKEN" "https://localhost:4443/api/1/vehicles/$VIN/command/set_charge_limit" --data '{"percent": 87}'
+# curl --cacert cert.pem \
+      --header 'Content-Type: application/json' \
+      --header "Authorization: Bearer $OWNER_AUTH_TOKEN" \
+      --data '{"percent": 87}' \
+      "https://localhost:4443/api/1/vehicles/$VIN/command/set_charge_limit"
+
 {"response":{"result":true,"reason":""}}
 
-# curl -k --header "Authorization: Bearer $OWNER_AUTH_TOKEN" "https://localhost:4443/api/1/vehicles/$VIN/vehicle_data" | jq .response.charge_state.charge_limit_soc
+# curl --cacert cert.pem -s \
+      --header "Authorization: Bearer $OWNER_AUTH_TOKEN" \
+      "https://localhost:4443/api/1/vehicles/$VIN/vehicle_data" \
+      | jq .response.charge_state.charge_limit_soc
 87
 ```
 
