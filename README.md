@@ -5,6 +5,9 @@ It adds a new `-mode owner` switch to the tesla-http-proxy, and then forwards AP
 
 It also adds a new `-mode ble` switch to the tesla-http-proxy, and then forwards API requests to the Owner API, except for commands which are send via BLE (Bluetooth Low Energy) with end-to-end command authentication. This requires the proxy to run on a device near the vehicle.
 
+> [!CAUTION]
+> ble mode does not need the client to valid auth token to send commands. Anybody with network access to the proxy could send commands.
+
 This is barely working right now. Use it at your own risk and have a debugger ready. I welcome Pull Requests.
 
 You need to generate a keypair and register it to the vehicle, which is possible via BLE and the tesla-command tool like this:
