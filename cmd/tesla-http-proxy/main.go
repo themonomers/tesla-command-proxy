@@ -43,6 +43,7 @@ func main() {
 		verbose      bool
 		host         string
 		port         int
+		mode         string
 	)
 
 	config, err := cli.NewConfig(cli.FlagPrivateKey)
@@ -64,6 +65,7 @@ func main() {
 	flag.BoolVar(&verbose, "verbose", false, "Enable verbose logging")
 	flag.StringVar(&host, "host", "localhost", "Proxy server `hostname`")
 	flag.IntVar(&port, "port", defaultPort, "`Port` to listen on")
+	flag.StringVar(&mode, "mode", "fleet", "Which mode to use, one of `fleet`, `owner`")
 	flag.Usage = Usage
 	config.RegisterCommandLineFlags()
 	flag.Parse()
@@ -93,7 +95,7 @@ func main() {
 	}
 
 	log.Debug("Creating proxy")
-	p, err := proxy.New(context.Background(), skey, cacheSize)
+	p, err := proxy.New(context.Background(), skey, cacheSize, mode)
 	if err != nil {
 		return
 	}
