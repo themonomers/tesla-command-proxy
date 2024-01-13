@@ -3,7 +3,14 @@ This is a proof of concept on how to send signed commands to Tesla vehicles **wi
 
 It adds a new `-mode owner` switch to the tesla-http-proxy, and then forwards API requests to the Owner API, except for commands which are send via the Tesla Hermes backend with end-to-end command authentication.
 
+It also adds a new `-mode ble` switch to the tesla-http-proxy, and then forwards API requests to the Owner API, except for commands which are send via BLE (Bluetooth Low Energy) with end-to-end command authentication. This requires the proxy to run on a device near the vehicle.
+
 This is barely working right now. Use it at your own risk and have a debugger ready. I welcome Pull Requests.
+
+You need to generate a keypair and register it to the vehicle, which is possible via BLE and the tesla-command tool like this:
+```
+go run ./cmd/tesla-control -ble add-key-request public_key.pem owner cloud_key
+```
 
 This could break at any second when Tesla changes it's APIs, rules or protocols. This is not endorsed or supported by Tesla.
 
