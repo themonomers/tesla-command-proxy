@@ -224,7 +224,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	var acct *account.Account
 	var err error
 
-	if p.mode == "owner" {
+	if p.mode == "owner" || p.mode == "ble" {
 		acct, err = getOwnerAccount(req)
 	} else {
 		acct, err = getAccount(req)
@@ -320,22 +320,29 @@ func (p *Proxy) loadVehicleAndCommandFromRequest(ctx context.Context, acct *acco
 	if err != nil {
 		return nil, nil, err
 	}
-	if p.mode == "owner" {
+	switch p.mode {
+	case "owner":
 		car, err := acct.GetVehicleHermes(ctx, vin, p.commandKey, p.sessions)
 		if err != nil || car == nil {
 			writeJSONError(w, http.StatusInternalServerError, err)
 			return nil, nil, err
 		}
 		return car, commandToExecuteFunc, err
+	case "ble":
+		car, err := acct.GetVehicleBLE(ctx, vin, p.commandKey, p.sessions)
+		if err != nil || car == nil {
+			writeJSONError(w, http.StatusInternalServerError, err)
+			return nil, nil, err
+		}
+		return car, commandToExecuteFunc, err
+	default:
+		car, err := acct.GetVehicle(ctx, vin, p.commandKey, p.sessions)
+		if err != nil || car == nil {
+			writeJSONError(w, http.StatusInternalServerError, err)
+			return nil, nil, err
+		}
+		return car, commandToExecuteFunc, err
 	}
-
-	car, err := acct.GetVehicle(ctx, vin, p.commandKey, p.sessions)
-	if err != nil || car == nil {
-		writeJSONError(w, http.StatusInternalServerError, err)
-		return nil, nil, err
-	}
-
-	return car, commandToExecuteFunc, err
 }
 
 func extractCommandAction(ctx context.Context, req *http.Request, command string) (func(*vehicle.Vehicle) error, error) {
