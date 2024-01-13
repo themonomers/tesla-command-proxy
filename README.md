@@ -8,6 +8,9 @@ It also adds a new `-mode ble` switch to the tesla-http-proxy, and then forwards
 > [!CAUTION]
 > ble mode does not require the client to provide a valid auth token to send commands. Anybody with network access to the proxy could send commands.
 
+> [!NOTE]
+> I believe the car is very limited on how many BLE devices can be connected simultaneously. With multiple phone keys or keyfobs near the vehicle, the proxy might have trouble to also establish a BLE connection and commands time out.
+
 This is barely working right now. Use it at your own risk and have a debugger ready. I welcome Pull Requests.
 
 You need to generate a keypair and register it to the vehicle, which is possible via BLE and the tesla-command tool like this:
