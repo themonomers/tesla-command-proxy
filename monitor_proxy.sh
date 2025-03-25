@@ -15,7 +15,7 @@ while delimiter='/' read -ra row; do
 done <<< "$processes"
 
 # send notification if process found to be not running
-if [ "$up" == "false" ]; then
+if [[ $up == "false" ]]; then
 #  echo "Tesla HTTP Proxy not running"
   curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data '{"content":"'"Tesla HTTP Proxy not running"'"}' $webhook &> /dev/null
 fi
